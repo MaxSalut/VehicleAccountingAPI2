@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VehicleAccountingAPI.Data;
 using VehicleAccountingAPI.Models;
-using System.Linq; // Для .Any()
+using System.Linq; 
 
 namespace VehicleAccountingAPI.Controllers
 {
@@ -23,10 +23,10 @@ namespace VehicleAccountingAPI.Controllers
         public async Task<ActionResult<IEnumerable<TripLog>>> GetTripLogs()
         {
             return await _context.TripLogs
-                .Include(tl => tl.Driver)  // Включаємо водія
-                .Include(tl => tl.Vehicle) // Включаємо ТЗ
-                .Include(tl => tl.Trip)    // Включаємо поїздку
-                .OrderByDescending(tl => tl.LogDate) // Сортуємо
+                .Include(tl => tl.Driver)  
+                .Include(tl => tl.Vehicle) 
+                .Include(tl => tl.Trip)    
+                .OrderByDescending(tl => tl.LogDate) 
                 .ToListAsync();
         }
 
@@ -38,8 +38,7 @@ namespace VehicleAccountingAPI.Controllers
                 .Include(tl => tl.Driver)
                 .Include(tl => tl.Vehicle)
                 .Include(tl => tl.Trip)
-                .FirstOrDefaultAsync(tl => tl.TripLogId == id); // Змінено FindAsync на FirstOrDefaultAsync для використання Include
-
+                .FirstOrDefaultAsync(tl => tl.TripLogId == id); 
             if (tripLog == null)
             {
                 return NotFound();
@@ -57,12 +56,12 @@ namespace VehicleAccountingAPI.Controllers
                 return BadRequest("ID у запиті не співпадає з ID об'єкта.");
             }
 
-            if (!ModelState.IsValid) // Перевіряє DataAnnotations та IValidatableObject
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
 
-            // Додаткові перевірки існування зовнішніх ключів
+            
             if (!await _context.Drivers.AnyAsync(d => d.DriverId == tripLog.DriverId))
                 ModelState.AddModelError(nameof(tripLog.DriverId), "Вказаний водій не існує.");
             if (!await _context.Vehicles.AnyAsync(v => v.VehicleId == tripLog.VehicleId))
@@ -70,7 +69,7 @@ namespace VehicleAccountingAPI.Controllers
             if (!await _context.Trips.AnyAsync(t => t.TripId == tripLog.TripId))
                 ModelState.AddModelError(nameof(tripLog.TripId), "Вказана поїздка не існує.");
 
-            if (!ModelState.IsValid) // Повторна перевірка після додавання помилок
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
@@ -94,7 +93,6 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення запису журналу поїздки.");
             }
 
@@ -105,7 +103,7 @@ namespace VehicleAccountingAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<TripLog>> PostTripLog(TripLog tripLog)
         {
-            if (!ModelState.IsValid) // Перевіряє DataAnnotations та IValidatableObject
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
@@ -118,7 +116,7 @@ namespace VehicleAccountingAPI.Controllers
             if (!await _context.Trips.AnyAsync(t => t.TripId == tripLog.TripId))
                 ModelState.AddModelError(nameof(tripLog.TripId), "Вказана поїздка не існує.");
 
-            if (!ModelState.IsValid) // Повторна перевірка після додавання помилок
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
@@ -130,11 +128,10 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
-                return StatusCode(StatusCodes.Status500InternalServerError, "Помилка створення запису журналу поїздки.");
+                                return StatusCode(StatusCodes.Status500InternalServerError, "Помилка створення запису журналу поїздки.");
             }
 
-            // Повертаємо створений об'єкт з включеними навігаційними властивостями
+           
             var createdTripLog = await _context.TripLogs
                 .Include(tl => tl.Driver)
                 .Include(tl => tl.Vehicle)

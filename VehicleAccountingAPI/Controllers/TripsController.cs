@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VehicleAccountingAPI.Data;
 using VehicleAccountingAPI.Models;
-using System.Linq; // Для .Any()
+using System.Linq; 
 
 namespace VehicleAccountingAPI.Controllers
 {
@@ -22,10 +22,8 @@ namespace VehicleAccountingAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Trip>>> GetTrips()
         {
-            // Для списку поїздок можна не включати TripLogs, щоб уникнути надмірних даних.
-            // Або можна включати тільки кількість TripLogs, якщо це потрібно.
             return await _context.Trips
-                .OrderByDescending(t => t.PlannedStartDateTime) // Сортуємо
+                .OrderByDescending(t => t.PlannedStartDateTime) 
                 .ToListAsync();
         }
 
@@ -34,10 +32,10 @@ namespace VehicleAccountingAPI.Controllers
         public async Task<ActionResult<Trip>> GetTrip(int id)
         {
             var trip = await _context.Trips
-                .Include(t => t.TripLogs) // Включаємо пов'язані записи журналу
-                    .ThenInclude(tl => tl.Driver) // В журналі завантажуємо водія
+                .Include(t => t.TripLogs) 
+                    .ThenInclude(tl => tl.Driver) 
                 .Include(t => t.TripLogs)
-                    .ThenInclude(tl => tl.Vehicle) // В журналі завантажуємо ТЗ
+                    .ThenInclude(tl => tl.Vehicle) 
                 .FirstOrDefaultAsync(t => t.TripId == id);
 
             if (trip == null)
@@ -81,7 +79,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
+                 
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення даних поїздки.");
             }
 
@@ -92,7 +90,7 @@ namespace VehicleAccountingAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Trip>> PostTrip(Trip trip)
         {
-            if (!ModelState.IsValid) // Перевіряє DataAnnotations та IValidatableObject (метод Validate в моделі Trip)
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
@@ -104,7 +102,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
+                 
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка створення поїздки.");
             }
 
@@ -122,8 +120,7 @@ namespace VehicleAccountingAPI.Controllers
             }
 
             // Завдяки OnDelete(DeleteBehavior.Cascade) для TripLogs, пов'язані TripLogs будуть видалені автоматично.
-            // Якщо є інші залежності з Restrict, їх треба перевіряти тут.
-
+            
             _context.Trips.Remove(trip);
             await _context.SaveChangesAsync();
 

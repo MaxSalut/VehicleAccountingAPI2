@@ -88,7 +88,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex) // Обробка можливих конфліктів унікальності (наприклад, LicensePlate)
             {
-                // Додайте логування помилки ex
+                 
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення ТЗ. Можливо, такий номерний знак вже існує.");
             }
 
@@ -118,7 +118,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex) // Обробка можливих конфліктів унікальності
             {
-                // Додайте логування помилки ex
+                 
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка створення ТЗ. Можливо, такий номерний знак вже існує.");
             }
 

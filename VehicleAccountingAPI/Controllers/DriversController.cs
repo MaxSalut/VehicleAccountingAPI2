@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VehicleAccountingAPI.Data;
 using VehicleAccountingAPI.Models;
-using System.Linq; // Для .Any()
+using System.Linq;
 
 namespace VehicleAccountingAPI.Controllers
 {
@@ -22,8 +22,6 @@ namespace VehicleAccountingAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Driver>>> GetDrivers()
         {
-            // Для списку водіїв зазвичай достатньо основної інформації.
-            // Якщо потрібні пов'язані дані, їх можна додати через Include.
             return await _context.Drivers.ToListAsync();
         }
 
@@ -32,11 +30,11 @@ namespace VehicleAccountingAPI.Controllers
         public async Task<ActionResult<Driver>> GetDriver(int id)
         {
             var driver = await _context.Drivers
-                .Include(d => d.Assignments) // Включаємо призначення
-                    .ThenInclude(a => a.Vehicle) // В призначеннях можна завантажити деталі ТЗ
-                .Include(d => d.TripLogs)    // Включаємо історію поїздок
-                    .ThenInclude(tl => tl.Trip) // В записах журналу можна завантажити деталі поїздки
-                .FirstOrDefaultAsync(d => d.DriverId == id);
+                .Include(d => d.Assignments) 
+                    .ThenInclude(a => a.Vehicle) 
+                .Include(d => d.TripLogs)    
+                    .ThenInclude(tl => tl.Trip) 
+                    .FirstOrDefaultAsync(d => d.DriverId == id);
 
             if (driver == null)
             {
@@ -77,10 +75,8 @@ namespace VehicleAccountingAPI.Controllers
                     throw;
                 }
             }
-            catch (DbUpdateException ex) // Обробка можливих конфліктів унікальності (наприклад, Email, LicenseNumber)
+            catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
-                // Перевірка на конкретний тип помилки (наприклад, унікальний індекс) може бути складною без аналізу ex.InnerException
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення даних водія. Можливо, такий Email або номер посвідчення вже існує.");
             }
 
@@ -101,9 +97,8 @@ namespace VehicleAccountingAPI.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex) // Обробка можливих конфліктів унікальності
+            catch (DbUpdateException ex) 
             {
-                // Додайте логування помилки ex
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка створення водія. Можливо, такий Email або номер посвідчення вже існує.");
             }
 
@@ -121,7 +116,6 @@ namespace VehicleAccountingAPI.Controllers
                 return NotFound();
             }
 
-            // Перевірка залежностей перед видаленням, якщо OnDelete=Restrict/NoAction
             if (await _context.Assignments.AnyAsync(a => a.DriverId == id) ||
                 await _context.TripLogs.AnyAsync(tl => tl.DriverId == id))
             {

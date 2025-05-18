@@ -83,7 +83,10 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex) // Обробка можливих конфліктів унікальності (якщо індекс на Name)
             {
-                // Додайте логування помилки ex
+                
+
+
+
                 // Цей блок може бути зайвим, якщо ми вже перевіряємо унікальність назви вище,
                 // але залишено для обробки інших можливих DbUpdateException.
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення типу ТЗ. Можливо, така назва вже використовується.");
@@ -115,7 +118,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex) // На випадок, якщо перевірка вище не спрацювала через race condition
             {
-                // Додайте логування помилки ex
+                 
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка створення типу ТЗ. Можливо, така назва вже використовується.");
             }
 

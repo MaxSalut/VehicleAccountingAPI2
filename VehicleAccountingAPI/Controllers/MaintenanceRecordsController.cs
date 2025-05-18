@@ -1,10 +1,9 @@
 ﻿// File: Controllers/MaintenanceRecordsController.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-// using System.ComponentModel.DataAnnotations; // Не потрібен тут
 using VehicleAccountingAPI.Data;
 using VehicleAccountingAPI.Models;
-using System.Linq; // Для .Any() та .Select()
+using System.Linq; 
 
 namespace VehicleAccountingAPI.Controllers
 {
@@ -24,8 +23,8 @@ namespace VehicleAccountingAPI.Controllers
         public async Task<ActionResult<IEnumerable<MaintenanceRecord>>> GetMaintenanceRecords()
         {
             return await _context.MaintenanceRecords
-                .Include(mr => mr.Vehicle) // Включаємо дані про ТЗ
-                .OrderByDescending(mr => mr.MaintenanceDate) // Сортуємо за датою, новіші спочатку
+                .Include(mr => mr.Vehicle)
+                .OrderByDescending(mr => mr.MaintenanceDate) 
                 .ToListAsync();
         }
 
@@ -59,8 +58,7 @@ namespace VehicleAccountingAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Перевірка існування VehicleId
-            if (!await _context.Vehicles.AnyAsync(v => v.VehicleId == maintenanceRecord.VehicleId))
+                      if (!await _context.Vehicles.AnyAsync(v => v.VehicleId == maintenanceRecord.VehicleId))
             {
                 ModelState.AddModelError(nameof(maintenanceRecord.VehicleId), "Вказаний транспортний засіб не існує.");
                 return BadRequest(ModelState);
@@ -85,7 +83,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
+               
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення даних ТО.");
             }
 
@@ -115,7 +113,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка збереження даних ТО.");
             }
 
@@ -167,12 +165,12 @@ namespace VehicleAccountingAPI.Controllers
         [HttpGet("recent")]
         public async Task<ActionResult<IEnumerable<MaintenanceRecord>>> GetRecentMaintenanceRecords([FromQuery] int count = 5)
         {
-            if (count <= 0) count = 5; // Захист від некоректного значення count
+            if (count <= 0) count = 5; 
 
             return await _context.MaintenanceRecords
                 .Include(mr => mr.Vehicle)
                 .OrderByDescending(mr => mr.MaintenanceDate)
-                .Take(count) // Зроблено параметр count гнучким
+                .Take(count)
                 .ToListAsync();
         }
     }

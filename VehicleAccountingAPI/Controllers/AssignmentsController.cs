@@ -1,10 +1,9 @@
 ﻿// File: Controllers/AssignmentsController.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-// using System.ComponentModel.DataAnnotations; // Не потрібен тут, якщо використовується в моделях
 using VehicleAccountingAPI.Data;
 using VehicleAccountingAPI.Models;
-using System.Linq; // Для .Any() та .Select()
+using System.Linq; 
 
 namespace VehicleAccountingAPI.Controllers
 {
@@ -24,8 +23,8 @@ namespace VehicleAccountingAPI.Controllers
         public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments()
         {
             return await _context.Assignments
-                .Include(a => a.Vehicle) // Включаємо дані про ТЗ
-                .Include(a => a.Driver)  // Включаємо дані про водія
+                .Include(a => a.Vehicle) 
+                .Include(a => a.Driver)  
                 .ToListAsync();
         }
 
@@ -76,12 +75,11 @@ namespace VehicleAccountingAPI.Controllers
                 }
                 else
                 {
-                    throw; // Повторно кидаємо виняток для обробки вище або логування
+                    throw; 
                 }
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка оновлення даних. Можливо, порушено обмеження бази даних.");
             }
 
@@ -93,8 +91,6 @@ namespace VehicleAccountingAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Assignment>> PostAssignment(Assignment assignment)
         {
-            // ModelState.IsValid перевірить як атрибути DataAnnotations,
-            // так і метод Validate, якщо Assignment реалізує IValidatableObject.
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -107,7 +103,7 @@ namespace VehicleAccountingAPI.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Додайте логування помилки ex
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, "Помилка збереження даних. Можливо, порушено обмеження бази даних.");
             }
 
@@ -140,9 +136,9 @@ namespace VehicleAccountingAPI.Controllers
         public async Task<ActionResult<object>> GetAssignmentStatusCount()
         {
             var activeCount = await _context.Assignments
-                .CountAsync(a => a.EndDate == null || a.EndDate >= DateTime.UtcNow); // Уточнено для активних
+                .CountAsync(a => a.EndDate == null || a.EndDate >= DateTime.UtcNow); 
             var inactiveCount = await _context.Assignments
-                .CountAsync(a => a.EndDate != null && a.EndDate < DateTime.UtcNow); // Уточнено для неактивних
+                .CountAsync(a => a.EndDate != null && a.EndDate < DateTime.UtcNow); 
 
             return new
             {
