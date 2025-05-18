@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Головна - Облік Транспортних Засобів</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="/index.html">Облік ТЗ</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/index.html">Головна</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/vehicle-types/index.html">Типи ТЗ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/vehicles/index.html">Транспортні засоби</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/drivers/index.html">Водії</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/maintenance-records/index.html">Записи ТО</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/assignments/index.html">Призначення</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trips/index.html">Поїздки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trip-logs/index.html">Журнал поїздок</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1 py-3">
+        <div class="container">
+            <h1 class="my-4 text-center">Інформаційна панель "Облік Транспортних Засобів"</h1>
+
+            <div class="row mb-4 text-center">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Загалом ТЗ</h5>
+                            <p class="card-text fs-4" id="totalVehicles">Завантаження...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Загалом Водіїв</h5>
+                            <p class="card-text fs-4" id="totalDrivers">Завантаження...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-dark bg-warning mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Активні Призначення</h5>
+                            <p class="card-text fs-4" id="activeAssignments">Завантаження...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Поїздок "В дорозі"</h5>
+                            <p class="card-text fs-4" id="tripsInProgress">Завантаження...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">Витрати на обслуговування по місяцях</div>
+                        <div class="card-body">
+                            <div id="maintenanceCostChart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">Статус призначень</div>
+                        <div class="card-body">
+                            <div id="assignmentStatusChart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">Статуси поїздок</div>
+                        <div class="card-body">
+                            <div id="tripStatusChart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">Топ-5 ТЗ за кількістю поїздок</div>
+                        <div class="card-body">
+                            <div id="topVehiclesByTripsChart" style="width: 100%; height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            Останні 5 записів технічного обслуговування
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Дата</th>
+                                        <th>ТЗ (Номер)</th>
+                                        <th>Опис</th>
+                                        <th>Вартість</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentMaintenanceRecordsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer bg-primary text-white text-center py-3 mt-auto">
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> - Облік Транспортних Засобів</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API URLs (перевірте порт)
+        const baseApiUrl = 'https://localhost:44322/api';
+        const vehiclesApi = `${baseApiUrl}/Vehicles`;
+        const driversApi = `${baseApiUrl}/Drivers`;
+        const assignmentsApi = `${baseApiUrl}/Assignments`;
+        const maintenanceApi = `${baseApiUrl}/MaintenanceRecords`;
+        const tripsApi = `${baseApiUrl}/Trips`;
+        const tripLogsApi = `${baseApiUrl}/TripLogs`;
+
+
+        // Завантаження Google Charts
+        google.charts.load('current', { 'packages': ['corechart', 'bar'] }); // Додано 'bar' для стовпчикових діаграм
+        google.charts.setOnLoadCallback(initializeDashboard);
+
+        function initializeDashboard() {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            loadStats();
+            drawMaintenanceCostChart();
+            drawAssignmentStatusChart();
+            drawTripStatusChart();
+            drawTopVehiclesByTripsChart();
+            loadRecentMaintenanceRecords();
+        }
+
+        async function fetchData(url, errorMessagePrefix = 'Помилка завантаження') {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error(`${errorMessagePrefix} з ${url}: ${response.status} ${response.statusText}`);
+                    throw new Error(`${errorMessagePrefix}: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Catch: ${errorMessagePrefix} з ${url}:`, error);
+                throw error; // Перекидаємо помилку для обробки вище
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const vehicles = await fetchData(vehiclesApi, 'Помилка завантаження ТЗ');
+                document.getElementById('totalVehicles').textContent = vehicles.length;
+            } catch (error) {
+                document.getElementById('totalVehicles').textContent = 'Помилка';
+            }
+
+            try {
+                const drivers = await fetchData(driversApi, 'Помилка завантаження водіїв');
+                document.getElementById('totalDrivers').textContent = drivers.length;
+            } catch (error) {
+                document.getElementById('totalDrivers').textContent = 'Помилка';
+            }
+
+            try {
+                const assignmentStatus = await fetchData(`${assignmentsApi}/status-count`, 'Помилка завантаження статусів призначень');
+                document.getElementById('activeAssignments').textContent = assignmentStatus.active || 0;
+            } catch (error) {
+                document.getElementById('activeAssignments').textContent = 'Помилка';
+            }
+            try {
+                const allTrips = await fetchData(tripsApi, 'Помилка завантаження поїздок');
+                const tripsInProgressCount = allTrips.filter(trip => trip.status && trip.status.toLowerCase() === 'в дорозі').length;
+                document.getElementById('tripsInProgress').textContent = tripsInProgressCount;
+
+            } catch (error) {
+                document.getElementById('tripsInProgress').textContent = 'Помилка';
+            }
+        }
+
+        async function drawMaintenanceCostChart() {
+            try {
+                const data = await fetchData(`${maintenanceApi}/costs-by-month`, 'Помилка даних для діаграми витрат');
+                const chartData = new google.visualization.DataTable();
+                chartData.addColumn('string', 'Місяць');
+                chartData.addColumn('number', 'Витрати (грн)');
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        chartData.addRow([`${String(item.month).padStart(2, '0')}/${item.year}`, parseFloat(item.totalCost)]);
+                    });
+                } else {
+                    chartData.addRow(['Немає даних', 0]);
+                }
+                const options = { title: 'Динаміка витрат на ТО', legend: { position: 'bottom' }, vAxis: { format: '#,##0.00 грн' } };
+                const chart = new google.visualization.AreaChart(document.getElementById('maintenanceCostChart')); // Змінено на AreaChart
+                chart.draw(chartData, options);
+            } catch (error) {
+                document.getElementById('maintenanceCostChart').innerHTML = '<div class="text-danger p-3">Не вдалося завантажити діаграму витрат.</div>';
+            }
+        }
+
+        async function drawAssignmentStatusChart() {
+            try {
+                const data = await fetchData(`${assignmentsApi}/status-count`, 'Помилка даних для діаграми призначень');
+                const chartData = new google.visualization.DataTable();
+                chartData.addColumn('string', 'Статус');
+                chartData.addColumn('number', 'Кількість');
+                chartData.addRow(['Активні', data.active || 0]);
+                chartData.addRow(['Неактивні', data.inactive || 0]);
+                const options = { title: 'Співвідношення активних/неактивних призначень', is3D: true, pieSliceText: 'percentage' };
+                const chart = new google.visualization.PieChart(document.getElementById('assignmentStatusChart'));
+                chart.draw(chartData, options);
+            } catch (error) {
+                document.getElementById('assignmentStatusChart').innerHTML = '<div class="text-danger p-3">Не вдалося завантажити діаграму призначень.</div>';
+            }
+        }
+
+        async function drawTripStatusChart() {
+            try {
+                const trips = await fetchData(tripsApi, 'Помилка даних для статусів поїздок');
+                const statusCounts = trips.reduce((acc, trip) => {
+                    acc[trip.status] = (acc[trip.status] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const chartData = new google.visualization.DataTable();
+                chartData.addColumn('string', 'Статус Поїздки');
+                chartData.addColumn('number', 'Кількість');
+                for (const status in statusCounts) {
+                    chartData.addRow([status, statusCounts[status]]);
+                }
+                if (chartData.getNumberOfRows() === 0) {
+                    chartData.addRow(['Немає даних', 0]);
+                }
+                const options = { title: 'Розподіл поїздок за статусами', is3D: true, pieHole: 0.4 };
+                const chart = new google.visualization.PieChart(document.getElementById('tripStatusChart'));
+                chart.draw(chartData, options);
+            } catch (error) {
+                document.getElementById('tripStatusChart').innerHTML = '<div class="text-danger p-3">Не вдалося завантажити діаграму статусів поїздок.</div>';
+            }
+        }
+
+        async function drawTopVehiclesByTripsChart() {
+            try {
+                const tripLogs = await fetchData(tripLogsApi + '?includeVehicle=true', 'Помилка даних для топ ТЗ'); // Припускаємо, що API може включати ТЗ
+
+                const vehicleTripCounts = tripLogs.reduce((acc, log) => {
+                    if (log.vehicle && log.vehicle.licensePlate) { // Переконуємось, що дані ТЗ є
+                        acc[log.vehicle.licensePlate] = (acc[log.vehicle.licensePlate] || 0) + 1; // Вважаємо кожен запис в TripLog як участь у "поїздці" (або етапі)
+                    } else {
+                        acc['Невідомий ТЗ'] = (acc['Невідомий ТЗ'] || 0) + 1;
+                    }
+                    return acc;
+                }, {});
+
+                const sortedVehicles = Object.entries(vehicleTripCounts)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 5); // Топ-5
+
+                const chartData = new google.visualization.DataTable();
+                chartData.addColumn('string', 'Транспортний Засіб (Номер)');
+                chartData.addColumn('number', 'Кількість "участей" у поїздках');
+                if (sortedVehicles.length > 0) {
+                    sortedVehicles.forEach(([licensePlate, count]) => {
+                        chartData.addRow([licensePlate, count]);
+                    });
+                } else {
+                    chartData.addRow(['Немає даних', 0]);
+                }
+
+                const options = {
+                    title: 'Топ-5 ТЗ за кількістю участей у поїздках (записах TripLog)',
+                    chartArea: { width: '60%' },
+                    hAxis: { title: 'Кількість', minValue: 0 },
+                    vAxis: { title: 'ТЗ (Номер)' },
+                    legend: { position: 'none' }
+                };
+                const chart = new google.visualization.BarChart(document.getElementById('topVehiclesByTripsChart'));
+                chart.draw(chartData, options);
+            } catch (error) {
+                document.getElementById('topVehiclesByTripsChart').innerHTML = '<div class="text-danger p-3">Не вдалося завантажити діаграму топ ТЗ.</div>';
+            }
+        }
+
+
+        async function loadRecentMaintenanceRecords() {
+            const tbody = document.getElementById('recentMaintenanceRecordsBody');
+            try {
+                const records = await fetchData(`${maintenanceApi}/recent?count=5`, 'Помилка завантаження останніх ТО');
+                tbody.innerHTML = ''; // Clear previous
+                if (records.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">Немає останніх записів ТО</td></tr>';
+                    return;
+                }
+                records.forEach(record => {
+                    const row = document.createElement('tr');
+                    const maintenanceDateStr = record.maintenanceDate ? new Date(record.maintenanceDate).toLocaleDateString('uk-UA') : 'N/A';
+                    const costStr = typeof record.cost === 'number' ? record.cost.toFixed(2) + ' грн' : 'N/A';
+                    row.innerHTML = `
+                            <td>${maintenanceDateStr}</td>
+                            <td>${record.vehicle?.licensePlate || 'N/A'} (${record.vehicle?.model || 'N/A'})</td>
+                            <td>${(record.description || 'N/A').substring(0, 50)}${(record.description || '').length > 50 ? '...' : ''}</td>
+                            <td>${costStr}</td>
+                        `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center">Помилка завантаження: ${error.message}</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>

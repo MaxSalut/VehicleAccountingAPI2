@@ -1,0 +1,325 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Транспортні засоби - Облік ТЗ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="/index.html">Облік ТЗ</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/index.html">Головна</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/vehicle-types/index.html">Типи ТЗ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/vehicles/index.html">Транспортні засоби</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/drivers/index.html">Водії</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/maintenance-records/index.html">Записи ТО</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/assignments/index.html">Призначення</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trips/index.html">Поїздки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trip-logs/index.html">Журнал поїздок</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1 py-3">
+        <div class="container">
+            <h1>Транспортні засоби</h1>
+            <div class="mb-3">
+                <button class="btn btn-success" onclick="showCreateForm()">Додати новий ТЗ</button>
+            </div>
+            <table class="table table-striped table-hover" id="vehiclesTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Номерний знак</th>
+                        <th>Модель</th>
+                        <th>Рік</th>
+                        <th>Тип</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="vehiclesBody">
+                </tbody>
+            </table>
+
+            <div class="modal fade" id="vehicleFormModal" tabindex="-1" aria-labelledby="vehicleFormModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="formTitle">Заголовок форми</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="vehicleForm">
+                                <input type="hidden" id="vehicleId" />
+                                <div class="mb-3">
+                                    <label for="licensePlate" class="form-label">Номерний знак</label>
+                                    <input type="text" class="form-control" id="licensePlate" required maxlength="20" />
+                                    <div class="invalid-feedback" id="licensePlateError"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="model" class="form-label">Модель</label>
+                                    <input type="text" class="form-control" id="model" required maxlength="100" />
+                                    <div class="invalid-feedback" id="modelError"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="year" class="form-label">Рік випуску</label>
+                                    <input type="number" class="form-control" id="year" required min="1900" />
+                                    <div class="invalid-feedback" id="yearError"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="vehicleTypeId" class="form-label">Тип транспортного засобу</label>
+                                    <select class="form-select" id="vehicleTypeId" required>
+                                        <option value="">Оберіть тип...</option>
+                                    </select>
+                                    <div class="invalid-feedback" id="vehicleTypeIdError"></div>
+                                </div>
+                                <div class="alert alert-danger mt-3" id="generalError" style="display: none;"></div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                            <button type="submit" class="btn btn-primary" form="vehicleForm">Зберегти</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer bg-primary text-white text-center py-3 mt-auto">
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> - Облік Транспортних Засобів</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const apiUrl = 'https://localhost:44322/api/Vehicles'; // Перевірте порт
+        const vehicleTypesApiUrl = 'https://localhost:44322/api/VehicleTypes';
+        let vehicleModal = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            vehicleModal = new bootstrap.Modal(document.getElementById('vehicleFormModal'));
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            setupYearInput();
+            loadVehicleTypesForDropdown();
+            loadVehicles();
+        });
+
+        function setupYearInput() {
+            const yearInput = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            yearInput.max = currentYear + 1; // Дозволяємо наступний рік для нових моделей
+            yearInput.placeholder = `1900-${currentYear + 1}`;
+        }
+
+        async function loadVehicleTypesForDropdown() {
+            try {
+                const response = await fetch(vehicleTypesApiUrl);
+                if (!response.ok) throw new Error(`Помилка завантаження типів ТЗ: ${response.status}`);
+                const vehicleTypes = await response.json();
+                const select = document.getElementById('vehicleTypeId');
+                select.innerHTML = '<option value="">Оберіть тип...</option>';
+                vehicleTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.vehicleTypeId;
+                    option.textContent = type.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Помилка при завантаженні типів ТЗ для випадаючого списку:', error);
+                displayGeneralError(`Не вдалося завантажити типи ТЗ: ${error.message}`);
+            }
+        }
+
+        async function loadVehicles() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP помилка! Статус: ${response.status}`);
+                }
+                const vehicles = await response.json();
+                const tbody = document.getElementById('vehiclesBody');
+                tbody.innerHTML = '';
+                if (vehicles.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Немає даних про транспортні засоби</td></tr>';
+                    return;
+                }
+                vehicles.forEach(vehicle => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${vehicle.licensePlate || 'N/A'}</td>
+                            <td>${vehicle.model || 'N/A'}</td>
+                            <td>${vehicle.year || 'N/A'}</td>
+                            <td>${vehicle.vehicleType?.name || 'N/A'}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="showEditForm(${vehicle.vehicleId})">Редагувати</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteVehicle(${vehicle.vehicleId})">Видалити</button>
+                            </td>
+                        `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Помилка при завантаженні ТЗ:', error);
+                document.getElementById('vehiclesBody').innerHTML = `<tr><td colspan="5" class="text-center">Помилка завантаження даних: ${error.message}</td></tr>`;
+            }
+        }
+
+        function clearFormErrors() {
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+            document.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('is-invalid'));
+            document.getElementById('generalError').style.display = 'none';
+            document.getElementById('generalError').textContent = '';
+        }
+
+        function displayGeneralError(message) {
+            const generalErrorDiv = document.getElementById('generalError');
+            generalErrorDiv.textContent = message;
+            generalErrorDiv.style.display = 'block';
+        }
+
+        function displayValidationErrors(errors) {
+            clearFormErrors();
+            for (const key in errors) {
+                const fieldId = key.charAt(0).toLowerCase() + key.slice(1);
+                const inputField = document.getElementById(fieldId);
+                const errorDiv = document.getElementById(fieldId + 'Error');
+
+                if (errorDiv) {
+                    errorDiv.textContent = errors[key].join ? errors[key].join(' ') : errors[key];
+                    if (inputField) {
+                        inputField.classList.add('is-invalid');
+                    }
+                } else {
+                    const currentGeneralError = document.getElementById('generalError').textContent;
+                    displayGeneralError((currentGeneralError ? currentGeneralError + "\n" : "") + `${key}: ${errors[key].join ? errors[key].join(' ') : errors[key]}`);
+                }
+            }
+        }
+
+        function showCreateForm() {
+            clearFormErrors();
+            document.getElementById('vehicleForm').reset();
+            document.getElementById('vehicleId').value = ''; // Очищаємо ID для створення
+            document.getElementById('formTitle').textContent = 'Додати новий транспортний засіб';
+            vehicleModal.show();
+        }
+
+        async function showEditForm(id) {
+            clearFormErrors();
+            document.getElementById('vehicleForm').reset();
+            try {
+                const response = await fetch(`${apiUrl}/${id}`);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.message || errorData?.title || `Помилка завантаження даних ТЗ: ${response.status}`);
+                }
+                const vehicle = await response.json();
+
+                document.getElementById('formTitle').textContent = 'Редагувати транспортний засіб';
+                document.getElementById('vehicleId').value = vehicle.vehicleId;
+                document.getElementById('licensePlate').value = vehicle.licensePlate || '';
+                document.getElementById('model').value = vehicle.model || '';
+                document.getElementById('year').value = vehicle.year || '';
+                document.getElementById('vehicleTypeId').value = vehicle.vehicleTypeId || '';
+
+                vehicleModal.show();
+            } catch (error) {
+                console.error('Помилка при отриманні даних для редагування ТЗ:', error);
+                alert(`Не вдалося завантажити дані: ${error.message}`);
+            }
+        }
+
+        document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearFormErrors();
+
+            const id = document.getElementById('vehicleId').value;
+            const vehicleData = {
+                licensePlate: document.getElementById('licensePlate').value,
+                model: document.getElementById('model').value,
+                year: parseInt(document.getElementById('year').value),
+                vehicleTypeId: parseInt(document.getElementById('vehicleTypeId').value)
+            };
+
+            if (id) { // Для PUT
+                vehicleData.vehicleId = parseInt(id);
+            }
+
+            const url = id ? `${apiUrl}/${id}` : apiUrl;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(vehicleData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ title: "Невідома помилка сервера", detail: "Спробуйте ще раз пізніше." }));
+                    if (response.status === 400 && errorData.errors) {
+                        displayValidationErrors(errorData.errors);
+                    } else {
+                        displayGeneralError(errorData.title || errorData.detail || `HTTP помилка! Статус: ${response.status}`);
+                    }
+                    throw new Error(`Помилка сервера: ${response.status}`);
+                }
+
+                vehicleModal.hide();
+                loadVehicles();
+            } catch (error) {
+                console.error(`Помилка при ${id ? 'оновленні' : 'створенні'} ТЗ:`, error.message);
+            }
+        });
+
+        async function deleteVehicle(id) {
+            if (confirm('Ви впевнені, що хочете видалити цей транспортний засіб? Увага: це може призвести до помилок, якщо ТЗ використовується в призначеннях, записах ТО або журналі поїздок, де встановлено обмеження на видалення.')) {
+                try {
+                    const response = await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ title: "Помилка видалення", detail: "Перевірте, чи ТЗ не використовується в інших записах." }));
+                        // Якщо сервер повертає статус 400 (BadRequest) з детальним повідомленням, то показуємо його
+                        if (response.status === 400 && errorData.title) {
+                            alert(errorData.title + (errorData.detail ? `\n${errorData.detail}` : ""));
+                        } else {
+                            alert(errorData.title || `HTTP помилка! Статус: ${response.status}`);
+                        }
+                        throw new Error(errorData.title || `HTTP помилка! Статус: ${response.status}`);
+                    }
+                    loadVehicles();
+                } catch (error) {
+                    console.error('Помилка при видаленні ТЗ:', error);
+                    // alert(`Не вдалося видалити ТЗ: ${error.message}`); // Повідомлення вже є
+                }
+            }
+        }
+    </script>
+</body>
+</html>

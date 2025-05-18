@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Запити - Облік Транспортних Засобів</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <style>
+        #queryDescription {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .param-group {
+            margin-bottom: 10px;
+        }
+
+        #resultsTable th {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="/index.html">Облік ТЗ</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/index.html">Головна</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/vehicle-types/index.html">Типи ТЗ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/vehicles/index.html">Транспортні засоби</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/drivers/index.html">Водії</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/maintenance-records/index.html">Записи ТО</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/assignments/index.html">Призначення</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trips/index.html">Поїздки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trip-logs/index.html">Журнал поїздок</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/queries/index.html">Запити</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1 py-3">
+        <div class="container">
+            <h1 class="mb-4">Виконання запитів до бази даних</h1>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="queryCategorySelect" class="form-label">Категорія запиту:</label>
+                    <select id="queryCategorySelect" class="form-select">
+                        <option value="">Оберіть категорію...</option>
+                        <option value="simple">Прості параметризовані запити</option>
+                        <option value="complex">Запити з множинними порівняннями</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="querySelect" class="form-label">Оберіть запит:</label>
+                    <select id="querySelect" class="form-select" disabled>
+                        <option value="">Спочатку оберіть категорію...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="queryDetailsContainer" style="display: none;">
+                <h4 id="queryTitle"></h4>
+                <div id="queryDescription" class="mb-3"></div>
+                <h5>Параметри запиту:</h5>
+                <form id="queryParametersForm" class="mb-3"></form>
+                <button id="executeQueryButton" class="btn btn-primary">Знайти</button>
+            </div>
+
+            <hr class="my-4" id="resultsSeparator" style="display: none;">
+
+            <div id="resultsContainer" style="display: none;">
+                <h3 id="resultsTitle">Результати запиту</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="resultsTable">
+                        <thead id="resultsTableHead"></thead>
+                        <tbody id="resultsTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="noResultsMessage" class="alert alert-info" style="display: none;">Даних за вашим запитом не знайдено.</div>
+                <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer bg-primary text-white text-center py-3 mt-auto">
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> - Облік Транспортних Засобів</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/queries.js"></script>
+</body>
+</html>

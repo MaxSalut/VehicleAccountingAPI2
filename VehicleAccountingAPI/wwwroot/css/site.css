@@ -1,0 +1,193 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+}
+
+.footer {
+    flex-shrink: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #2c3e50, #3498db);
+    color: #ecf0f1;
+    padding: 20px 0;
+    border-top: 4px solid #1abc9c;
+    text-align: center;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #2c3e50, #3498db);
+    padding: 15px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ecf0f1 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    color: #ecf0f1 !important;
+    font-size: 16px;
+    margin-left: 20px;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+    .nav-link:hover {
+        color: #1abc9c !important;
+        transform: translateY(-2px);
+    }
+
+.container {
+    max-width: 1200px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 700;
+}
+
+h4 {
+    color: #3498db;
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    background-color: #1abc9c;
+    border-color: #1abc9c;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #16a085;
+        border-color: #16a085;
+        transform: scale(1.05);
+    }
+
+.btn-danger {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    border-radius: 25px;
+}
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+        border-color: #c0392b;
+    }
+
+.table {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    margin: 20px 0;
+}
+
+    .table th {
+        background-color: #3498db;
+        color: #fff;
+        padding: 15px;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .table td {
+        padding: 15px;
+        vertical-align: middle;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table tr:hover {
+        background-color: #ecf0f1;
+        transition: background-color 0.2s ease;
+    }
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #bdc3c7;
+    padding: 10px;
+    transition: border-color 0.3s ease;
+}
+
+    .form-control:focus {
+        border-color: #1abc9c;
+        box-shadow: 0 0 5px rgba(26, 188, 156, 0.3);
+    }
+
+.text-danger {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #e74c3c;
+}
+
+.footer a {
+    color: #1abc9c;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    .footer a:hover {
+        color: #16a085;
+    }
+
+/* Додаткові стилі для головної сторінки */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+.card-header {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.card-title {
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+.card-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #3498db;
+}
